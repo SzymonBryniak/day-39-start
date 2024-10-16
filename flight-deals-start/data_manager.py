@@ -1,3 +1,4 @@
+import pygsheets
 import requests
 from datetime import datetime
 import json
@@ -12,6 +13,8 @@ class DataManager:
         self.today = datetime.now().strftime("%d/%m/%Y")
         self.time = datetime.now().strftime("%H:%M:%S")
         self.oAuth_token = {}
+        self.city = ''
+        self.code = ''
     # This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the program requirements.
     # APIs used
     # I will use pygsheet instead of sheety
@@ -48,10 +51,16 @@ class DataManager:
     def edit_pygsheet(self):
         gc = pygsheets.authorize(client_secret='client_secret.json')
         sh = gc.open('My Workouts')
+        sh2 = gc.create('Flights')
+
         wk1 = sh[1]  # Open first worksheet of spreadsheet
         # Or
         # wks = sh.sheet1 # sheet1 is name of first worksheet
         print(wk1, sh.url, wk1.get_value('A1'))
+        new_row = [self.city, self.code]
+        # Append the new row at the end of the worksheet
+        wk1.append_table(values=new_row)
+
         return self
 
     def get_destinations_test(self):
@@ -60,7 +69,7 @@ class DataManager:
         # - H
         # 'Authorization: Bearer ABCDEFGH12345'
         endpoint = 'https://test.api.amadeus.com/v1/shopping/flight-destinations'
-        token = self.oAuth_token
+        token = self.get_oAuth_token()
         print(self.oAuth_token)
         params = {
             "origin": "PAR",
@@ -75,4 +84,4 @@ class DataManager:
 
 
 claas_test = DataManager()
-claas_test.get_oAuth_token()
+claas_test.edit_pygsheet()
