@@ -4,6 +4,7 @@ class FlightData:
     #This class is responsible for structuring the flight data.
     def __init__(self):
         self.cities = []
+        self.code = []
         self.oAuth_token = {}
         self.locations_end = "https://test.api.amadeus.com/v1/reference-data/locations"
         self.location_by_id = "https://test.api.amadeus.com/v1/reference-data/locations/idtoenter"
@@ -31,13 +32,12 @@ class FlightData:
 
     def enter_cities(self):
         print("Enter 5 cities")
-        while len(self.cities) < 1:
+        while len(self.cities) < 2:
             self.cities.append(input("Please enter a city name: ").upper())
 
 
 
     def get_cities(self, counter=0):
-        print(self.cities)
         # curl
         # 'https://test.api.amadeus.com/v1/shopping/flight-destinations?origin=PAR&maxPrice=200' \
         # - H
@@ -55,9 +55,11 @@ class FlightData:
         }
         response = requests.get(url=endpoint, headers=header, params=params)
         response.raise_for_status()
+
         try:
             print(response.json()["data"][0]['id'])
             self.location_ids.append(response.json()["data"][0]['id'])
+            return response.json()["data"][0]['id']
         except IndexError:
             print(f'No destinations found to {self.cities[counter]} ')
             print(response.json())
@@ -85,7 +87,8 @@ class FlightData:
         #     print(response.json())
 
 cities = FlightData()
-for i in range(1):
-    cities.get_cities(i)
+for i in range(2):
+    cities.cities.append(cities.get_cities(i))
 
-cities.get_airports()
+print(cities.cities, cities.code)
+
