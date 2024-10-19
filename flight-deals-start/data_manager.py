@@ -3,6 +3,10 @@ import requests
 from datetime import datetime
 import json
 
+from aiohttp.client_exceptions import cert_errors
+from gspread import SpreadsheetNotFound
+
+
 # curl "https://test.api.amadeus.com/v1/security/oauth2/token" \
 #      -H "Content-Type: application/x-www-form-urlencoded" \
 #      -d "grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}"
@@ -10,11 +14,11 @@ import json
 class DataManager:
 
     def __init__(self):
+
         self.today = datetime.now().strftime("%d/%m/%Y")
         self.time = datetime.now().strftime("%H:%M:%S")
         self.oAuth_token = {}
-        self.city = ''
-        self.code = ''
+
     # This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the program requirements.
     # APIs used
     # I will use pygsheet instead of sheety
@@ -42,24 +46,30 @@ class DataManager:
 
         response = requests.post(url=endpoint, headers=header, data=data)
         response.raise_for_status()
-        print(response.text)
         self.oAuth_token.update(response.json())
         print(self.oAuth_token)
 
         return self.oAuth_token['access_token']
 
-    def edit_pygsheet(self):
+    def edit_pygsheet(self, city, code):
         gc = pygsheets.authorize(client_secret='client_secret.json')
-        sh = gc.open('My Workouts')
-        sh2 = gc.create('Flights')
+        headers = ['CITY', 'CODE', 'AIRPORT', 'PRICE', 'TO']
+        try:
+            sh2 = gc.open('Flights')
+        except SpreadsheetNotFound:
+            sh2 = gc.create('Flights')
+            wk1 = sh2[0]
+            wk1.update_values('A1:E1', [headers])
 
-        wk1 = sh[1]  # Open first worksheet of spreadsheet
+        wk1 = sh2[0]  # Open first worksheet of spreadsheet
         # Or
         # wks = sh.sheet1 # sheet1 is name of first worksheet
-        print(wk1, sh.url, wk1.get_value('A1'))
-        new_row = [self.city, self.code]
+        print(wk1, sh2.url, wk1.get_value('A1'))
         # Append the new row at the end of the worksheet
-        wk1.append_table(values=new_row)
+
+        for i in range(2, len(city)+2):
+            wk1.append_table(values=[city[i-2], code[i-2]])
+
 
         return self
 
@@ -83,5 +93,4 @@ class DataManager:
         print(response.text)
 
 
-claas_test = DataManager()
-claas_test.edit_pygsheet()
+
