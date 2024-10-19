@@ -51,8 +51,11 @@ class FlightSearch:
         response = requests.get(url=endpoint, headers=header,params=params_str)
         response.raise_for_status()
 
-        print(response.json())
+        print(len(response.json()['data']))
+        for i in range(0, len(response.json()['data'])):
+            print(response.json()['data'][i])
         return self
 
 test = FlightSearch()
+
 print(test.get_flights('LON'))
