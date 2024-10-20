@@ -37,7 +37,8 @@ class FlightSearch:
     def get_flights(self, *origin):
         responses = []
         def get_responses():
-            for r in origin:
+            for r in range(0, len(*origin)):
+                print(origin)
                 datestr = self.today_str + "," + self.delta_strf
 
                 token = self.get_oAuth_token()
@@ -46,29 +47,32 @@ class FlightSearch:
                     'Authorization': f'Bearer {token}'
                 }
                 params = {
-                    "origin": f'{origin[r]}',
+                    "origin": f'{origin[0][r][1:]}',
                     "departureDate": rf'{datestr}'
                 }
                 params_str = urllib.parse.urlencode(params, safe=",")
                 endpoint = "https://test.api.amadeus.com/v1/shopping/flight-destinations"
                 # ?origin=LON&departureDate=2021-12-01,2021-12-31
+                print(params_str)
                 response = requests.get(url=endpoint, headers=header,params=params_str)
                 response.raise_for_status()
                 responses.append(response.json())
             return
         get_responses()
         to_gsheet = {}
-        for country in range(5):
-            print(len(responses[country].json()['data']))
-            for i in range(0, len(responses[country].json()['data'])):
+        print(responses)
+        for country in range(1):
+            print(len(responses[0]['data'][0]))
+            for i in range(0, len(responses[0]['data'])):
                 # print(response.json()['data'][i])
-                to_gsheet.update({origin[0]:[responses[country].json()['data'][i]['destination'],
-                                  responses[country].json()['data'][i]['departureDate'],
-                                  responses[country].json()['data'][i]['returnDate'],
-                                  responses[country].json()['data'][i]['price']
+                print(origin[0][0])
+                to_gsheet.update({origin[0][0]:[responses[i]['data'][0]['destination'],
+                                  responses[i]['data'][0]['departureDate'],
+                                  responses[i]['data'][0]['returnDate'],
+                                  responses[i]['data'][0]['price']
                                   ]})
 
-                print(to_gsheet)
+        print(to_gsheet)
         return self
 
     def get_flights_mini(self, origin):
