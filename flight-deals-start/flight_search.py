@@ -1,15 +1,20 @@
 import requests
+from datetime import datetime, timedelta
+import urllib.parse
+from dateutil.utils import today
 
-class FlightData:
-    #This class is responsible for structuring the flight data.
+
+class FlightSearch:
+    #This class is responsible for talking to the Flight Search API.
     def __init__(self):
-        self.cities = []
-        self.code = []
-        self.oAuth_token = {}
-        self.locations_end = "https://test.api.amadeus.com/v1/reference-data/locations"
-        self.location_by_id = "https://test.api.amadeus.com/v1/reference-data/locations/idtoenter"
-        self.location_ids = []
-        # self.enter_cities()
+       self.oAuth_token = {}
+       today = datetime.today() + timedelta(days=1)
+       self.today_str = today.strftime("%Y-%m-%d")
+       delta = datetime.now() + timedelta(days=5)
+       self.delta_strf = str(delta.strftime("%Y-%m-%d"))
+       self.time = datetime.now().strftime("%H:%M:%S")
+       self.to_gsheet = {}
+    pass
 
 
     def get_oAuth_token(self):
@@ -29,61 +34,41 @@ class FlightData:
 
         return self.oAuth_token['access_token']
 
-    def enter_cities(self):
-        print("Enter 5 cities")
-        while len(self.cities) < 5:
-            self.cities.append(input("Please enter a city name: ").upper())
+    def get_flights(self, origin):
+        for o in range(0, len(origin)):
+            print(origin[o][1:])
+            datestr = self.today_str + "," + self.delta_strf
+
+            token = self.get_oAuth_token()
+
+            header = {
+                'Authorization': f'Bearer {token}'
+            }
+            params = {
+                "origin": f'{origin[o][1:]}',
+                "departureDate": rf'{datestr}'
+            }
+            params_str = urllib.parse.urlencode(params, safe=",")
+            endpoint = "https://test.api.amadeus.com/v1/shopping/flight-destinations"
+            # ?origin=LON&departureDate=2021-12-01,2021-12-31
+            response = requests.get(url=endpoint, headers=header, params=params_str)
+            response.raise_for_status()
+            to_gsheet = {}
+            for i in range(0, len(response.json()['data'])):
+                # print(response.json()['data'][i])
+                to_gsheet.update({origin[o]: [response.json()['data'][i]['destination'],
+                                              response.json()['data'][i]['departureDate'],
+                                              response.json()['data'][i]['returnDate'],
+                                              response.json()['data'][i]['price']
+                                              ]})
+
+                print(to_gsheet)
 
 
 
-    def get_cities(self, counter=0):
-        # curl
-        # 'https://test.api.amadeus.com/v1/shopping/flight-destinations?origin=PAR&maxPrice=200' \
-        # - H
-        # 'Authorization: Bearer ABCDEFGH12345'
-        endpoint = self.locations_end
-        token = self.get_oAuth_token()
 
-        header = {
-            'Authorization': f'Bearer {token}'
-        }
-        params = {
-            "subType": "CITY",
-            "keyword": f"{self.cities[counter]}"
+test = FlightSearch()
 
-        }
-        response = requests.get(url=endpoint, headers=header, params=params)
-        response.raise_for_status()
-
-        try:
-            print(response.json()["data"][0]['id'])
-            self.location_ids.append(response.json()["data"][0]['id'])
-            return response.json()["data"][0]['id']
-        except IndexError:
-            print(f'No destinations found from {self.cities[counter]} ')
-            print(response.json())
-
-
-
-    def get_airports(self):
-        endpoint = "https://test.api.amadeus.com/v1/reference-data/locations/CMUC"
-        token = self.get_oAuth_token()
-
-        header = {
-            'Authorization': f'Bearer {token}'
-        }
-        # params = {
-        #     "locationId": f"{self.location_ids[0]}"
-        #
-        # }
-        response = requests.get(url=endpoint, headers=header)
-        response.raise_for_status()
-        print(response.json())
-        # try:
-        #     print(response.json()["data"][0]['id'])
-        # except IndexError:
-        #     print(f'No destinations found to {self.cities[0]} ')
-        #     print(response.json())
-
-
-
+# print(test.get_flights_mini('LON'))
+    # to handle the below exception. I will continue and ask to enter a different city.
+    # requests.exceptions.HTTPError: 429 Client Error: Too Many Requests for url:
