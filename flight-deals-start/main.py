@@ -7,7 +7,7 @@ from flight_search import FlightSearch
 cities = flight_data.FlightData()
 cities.enter_cities()
     # append cities
-for i in range(1):
+for i in range(5):
     cities.code.append(cities.get_cities(i))
 
     # pass entered cities list to flight search
