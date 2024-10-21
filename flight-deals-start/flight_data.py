@@ -8,7 +8,6 @@ class FlightData:
         self.oAuth_token = {}
         self.locations_end = "https://test.api.amadeus.com/v1/reference-data/locations"
         self.location_by_id = "https://test.api.amadeus.com/v1/reference-data/locations/idtoenter"
-        self.enter_cities()
         self.location_ids = []
         # self.enter_cities()
 
@@ -32,7 +31,7 @@ class FlightData:
 
     def enter_cities(self):
         print("Enter 5 cities")
-        while len(self.cities) < 2:
+        while len(self.cities) < 5:
             self.cities.append(input("Please enter a city name: ").upper())
 
 
@@ -61,7 +60,7 @@ class FlightData:
             self.location_ids.append(response.json()["data"][0]['id'])
             return response.json()["data"][0]['id']
         except IndexError:
-            print(f'No destinations found to {self.cities[counter]} ')
+            print(f'No destinations found from {self.cities[counter]} ')
             print(response.json())
 
 
@@ -86,9 +85,5 @@ class FlightData:
         #     print(f'No destinations found to {self.cities[0]} ')
         #     print(response.json())
 
-cities = FlightData()
-for i in range(2):
-    cities.cities.append(cities.get_cities(i))
 
-print(cities.cities, cities.code)
 
