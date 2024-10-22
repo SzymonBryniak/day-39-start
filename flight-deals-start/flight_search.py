@@ -57,11 +57,11 @@ class FlightSearch:
             to_gsheet.update({origin[0]:[]})
             for i in range(0, len(response.json()['data'])):
                 # print(response.json()['data'][i])
-                to_gsheet[f'{origin[0]}'].append([[response.json()['data'][i]['destination'],
+                to_gsheet[f'{origin[0]}'].append([response.json()['data'][i]['destination'],
                                           response.json()['data'][i]['departureDate'],
                                           response.json()['data'][i]['returnDate'],
                                           response.json()['data'][i]['price']
-                                          ]])
+                                          ])
 
 
             return to_gsheet
