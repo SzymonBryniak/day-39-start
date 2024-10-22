@@ -54,15 +54,17 @@ class FlightSearch:
             response = requests.get(url=endpoint, headers=header, params=params_str)
             response.raise_for_status()
             to_gsheet = {}
+            to_gsheet.update({origin[0]:[]})
             for i in range(0, len(response.json()['data'])):
                 # print(response.json()['data'][i])
-                to_gsheet.update({origin[o]: [response.json()['data'][i]['destination'],
-                                              response.json()['data'][i]['departureDate'],
-                                              response.json()['data'][i]['returnDate'],
-                                              response.json()['data'][i]['price']
-                                              ]})
+                to_gsheet[f'{origin[0]}'].append([[response.json()['data'][i]['destination'],
+                                          response.json()['data'][i]['departureDate'],
+                                          response.json()['data'][i]['returnDate'],
+                                          response.json()['data'][i]['price']
+                                          ]])
 
-                print(to_gsheet)
+
+            return to_gsheet
 
 
 
