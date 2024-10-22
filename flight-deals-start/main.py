@@ -7,19 +7,29 @@ from flight_search import FlightSearch
 cities = flight_data.FlightData()
 cities.enter_cities()
     # append cities
-for i in range(5):
+for i in range(1):
     cities.code.append(cities.get_cities(i))
-
     # pass entered cities list to flight search
+
 search = FlightSearch()
-search.get_flights(cities.code)
+to_gsheet = search.get_flights(cities.code)
 
     # populate gsheet
-# gsheet = DataManager()
+# print(to_gsheet)
+gsheet = DataManager()
 # gsheet.edit_pygsheet(cities.cities, cities.code)
-
+print(to_gsheet)
 
 #update gsheet with better prices
+
+
+
+
+
+
+
+
+
 
 
 # import aiohttp
