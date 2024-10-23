@@ -18,6 +18,7 @@ class DataManager:
         self.today = datetime.now().strftime("%d/%m/%Y")
         self.time = datetime.now().strftime("%H:%M:%S")
         self.oAuth_token = {}
+        self.get_oAuth_token()
 
     # This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the program requirements.
     # APIs used
@@ -51,8 +52,8 @@ class DataManager:
 
         return self.oAuth_token['access_token']
 
-    def edit_pygsheet(self, city, code):
-        gc = pygsheets.authorize(client_secret='client_secret.json')
+    def edit_pygsheet(self,origin, destination, city):
+        gc = pygsheets.authorize(client_secret='client_secret.json', scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
         headers = ['CITY', 'CODE', 'AIRPORT', 'PRICE', 'TO']
         try:
             sh2 = gc.open('Flights')
@@ -66,9 +67,9 @@ class DataManager:
         # wks = sh.sheet1 # sheet1 is name of first worksheet
         print(wk1, sh2.url, wk1.get_value('A1'))
         # Append the new row at the end of the worksheet
-
-        for i in range(2, len(city)+2):
-            wk1.append_table(values=[city[i-2], code[i-2]])
+        print(origin, destination)
+        for i in range(0, len(destination)):
+            wk1.append_table(values=[[city]+[origin]+destination[i][:-1]])
 
 
         return self
