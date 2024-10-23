@@ -18,7 +18,10 @@ to_gsheet = search.get_flights(cities.code)
 # print(to_gsheet)
 gsheet = DataManager()
 # gsheet.edit_pygsheet(cities.cities, cities.code)
-print(to_gsheet)
+for key, value in to_gsheet.items():
+    gsheet.edit_pygsheet(key,value, cities.cities[0])
+
+
 
 #update gsheet with better prices
 
