@@ -55,13 +55,16 @@ class DataManager:
         return self.oAuth_token['access_token']
 
     def edit_pygsheet(self,origin, destination, city):
-        headers = ['CITY', 'CODE', 'AIRPORT', 'PRICE', 'TO']
+        header = ['FROM', 'CODE', 'TO', 'Departure', 'Return', 'Price']
         try:
             sh2 = self.gc.open('Flights')
-        except SpreadsheetNotFound:
-            sh2 = self.gc.create('Flights')
             wk1 = sh2[0]
-            wk1.update_values('A1:E1', [headers])
+            wk1.update_row(1, header)
+        except pygsheets.exceptions.SpreadsheetNotFound:
+            sh2 = self.gc.create('Flights')
+            sh2 = self.gc.open('Flights')
+            wk1 = sh2[0]
+            wk1.update_row(1, header)
 
         wk1 = sh2[0]  # Open first worksheet of spreadsheet
         # Or
@@ -70,7 +73,7 @@ class DataManager:
         # Append the new row at the end of the worksheet
         print(origin, destination)
         for i in range(0, len(destination)):
-            wk1.append_table(values=[[city]+[origin]+destination[i][:-1]])
+            wk1.append_table(values=[[city]+[origin]+destination[i][:-1]+[destination[i][3]['total']]])
         self.data = wk1.get_all_records()
 
 
