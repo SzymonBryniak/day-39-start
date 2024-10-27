@@ -79,6 +79,18 @@ class DataManager:
 
         return self
 
+    def get_worksheet_data(self):
+        sh2 = self.gc.open('Flights')
+        wk1 = sh2[0]
+        worksheet = wk1.get_all_records()
+
+        cities = wk1.get_col(1, include_tailing_empty=False)  # 1 refers to the first column (A)
+        departures = wk1.get_col(4, include_tailing_empty=False)
+        # Get unique values by converting to a set
+        unique_cities = list(set(cities))
+        unique_departures = list(set(departures))
+        return worksheet, unique_cities, unique_departures
+
     def get_destinations_test(self):
         # curl
         # 'https://test.api.amadeus.com/v1/shopping/flight-destinations?origin=PAR&maxPrice=200' \
