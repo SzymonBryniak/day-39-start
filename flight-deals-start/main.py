@@ -1,38 +1,46 @@
+from re import search
 from data_manager import DataManager
 import notification_manager
 import flight_data
 from flight_search import FlightSearch
 
-# enter cities
-cities = flight_data.FlightData()
-cities.enter_cities()
-    # append cities
-for i in range(1):
-    cities.code.append(cities.get_cities(i))
-    # pass entered cities list to flight search
 
-search = FlightSearch()
-to_gsheet = search.get_flights(cities.code)
+def main_app():
+    # enter cities
+    cities = flight_data.FlightData()
+    cities.enter_cities()
+        # append cities
+    for i in range(1):
+        cities.code.append(cities.get_cities(i))
+        # pass entered cities list to flight search
 
-    # populate gsheet
-# print(to_gsheet)
-gsheet = DataManager()
+    search = FlightSearch()
+    to_gsheet = search.get_flights(cities.code)
 
-# gsheet.edit_pygsheet(cities.cities, cities.code)
-for key, value in to_gsheet.items():
-    gsheet.edit_pygsheet(key,value, cities.cities[0])
+        # populate gsheet
+    # print(to_gsheet)
+    gsheet = DataManager()
 
-
-print(gsheet.data)
-#update gsheet with better prices
+    # gsheet.edit_pygsheet(cities.cities, cities.code)
+    for key, value in to_gsheet.items():
+        gsheet.edit_pygsheet(key,value, cities.cities[0])
 
 
+    print(f'worksheet data: {gsheet.data}')
+    # update gsheet with better prices
 
+def test_app():
 
+    search = FlightSearch()
+    search.flight_offers_search('PAR', 'MAD', '2024-10-30')
 
+def update_prices():
+    gsheet = DataManager()
+    worksheet, cities, departures = gsheet.get_worksheet_data()
+    print(departures)
 
-
-
+main_app()
+update_prices()
 
 
 
