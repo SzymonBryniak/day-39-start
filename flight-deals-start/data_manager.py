@@ -86,10 +86,12 @@ class DataManager:
 
         cities = wk1.get_col(1, include_tailing_empty=False)  # 1 refers to the first column (A)
         departures = wk1.get_col(4, include_tailing_empty=False)
+        codes = wk1.get_col(2, include_tailing_empty=False)
         # Get unique values by converting to a set
         unique_cities = list(set(cities))
         unique_departures = list(set(departures))
-        return worksheet, unique_cities, unique_departures
+        unique_codes = list(set(codes))
+        return worksheet, unique_cities, unique_departures, unique_codes
 
     def get_destinations_test(self):
         # curl
