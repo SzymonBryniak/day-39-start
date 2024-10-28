@@ -26,7 +26,7 @@ def main_app():
         gsheet.edit_pygsheet(key,value, cities.cities[0])
 
 
-    print(f'worksheet data: {gsheet.data}')
+
     # update gsheet with better prices
 
 def test_app():
@@ -35,12 +35,17 @@ def test_app():
     search.flight_offers_search('PAR', 'MAD', '2024-10-30')
 
 def update_prices():
+    search = FlightSearch()
     gsheet = DataManager()
-    worksheet, cities, departures = gsheet.get_worksheet_data()
-    print(departures)
+    worksheet, cities, departures, codes = gsheet.get_worksheet_data()
+    print(f'worksheet data: {worksheet}')
+    print(f'cities: {cities}')
+    print(f'departures: {sorted(departures)}')
+    print(f'code {codes}')
+    price_update = search.get_flights(codes[-1])
+    print(price_update)
 
-main_app()
-update_prices()
+
 
 
 
