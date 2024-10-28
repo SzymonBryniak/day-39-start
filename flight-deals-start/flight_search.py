@@ -8,12 +8,13 @@ class FlightSearch:
     #This class is responsible for talking to the Flight Search API.
     def __init__(self):
        self.oAuth_token = {}
-       today = datetime.today() + timedelta(days=1)
+       today = datetime.today() + timedelta(days=5)
        self.today_str = today.strftime("%Y-%m-%d")
-       delta = datetime.now() + timedelta(days=5)
+       delta = datetime.now() + timedelta(days=10)
        self.delta_strf = str(delta.strftime("%Y-%m-%d"))
        self.time = datetime.now().strftime("%H:%M:%S")
        self.to_gsheet = {}
+       self.get_oAuth_token()
     pass
 
 
@@ -34,7 +35,7 @@ class FlightSearch:
 
         return self.oAuth_token['access_token']
 
-    def get_flights(self, origin):
+    def get_flights(self, origin): # flight inspiration
         for o in range(0, len(origin)):
             print(origin[o][1:])
             datestr = self.today_str + "," + self.delta_strf
@@ -43,6 +44,7 @@ class FlightSearch:
 
             header = {
                 'Authorization': f'Bearer {token}'
+
             }
             params = {
                 "origin": f'{origin[o][1:]}',
@@ -67,7 +69,52 @@ class FlightSearch:
             return to_gsheet
 
 
+    def flight_offers_search(self, origin_code, destination_code, departure_date):
+        token = self.get_oAuth_token()
 
+        header = {
+            'Authorization': f'Bearer {token}'
+
+        }
+        params = {
+            "originLocationCode": origin_code,
+            "destinationLocationCode": destination_code,
+            "departureDate": departure_date,
+            "adults ": 1
+        }
+        params_str = urllib.parse.urlencode(params, safe=",")
+        endpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers"
+        # ?origin=LON&departureDate=2021-12-01,2021-12-31
+        response = requests.get(url=endpoint, headers=header, params=params_str)
+        response.raise_for_status()
+        print(response.json())
+
+    def flight_offers_search_post(self, data):
+        token = self.get_oAuth_token()
+        header = {
+            'X - HTTP - Method - Override': 'GET',
+            'Authorization': f'Bearer {token}'
+        }
+        data = open('./data.csv')
+
+
+        endpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers"
+        # ?origin=LON&departureDate=2021-12-01,2021-12-31
+        response = requests.post(url=endpoint, headers=header, data=data)
+        response.raise_for_status()
+        print(response.json())
+
+
+    def flight_offers_price(self):
+        endpoint = "https://test.api.amadeus.com/v1"
+        token = self.get_oAuth_token()
+        header = {
+            'Authorization': f'Bearer {token}',
+            'X-HTTP-Method-Override': 'GET'
+        }
+        data = {
+            'priceFlightOffersBody'
+        }
 
 test = FlightSearch()
 
