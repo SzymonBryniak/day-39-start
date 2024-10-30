@@ -4,7 +4,8 @@ import notification_manager
 import flight_data
 from flight_search import FlightSearch
 
-
+ # I am skipping this day for now because my tokens don't work anymore.
+ # This is the first day I will leave finishing for later.
 def main_app():
     # enter cities
     cities = flight_data.FlightData()
@@ -27,7 +28,7 @@ def main_app():
 
 
 
-    # update gsheet with better prices
+    # update gsheet with better price s
 
 def test_app():
 
@@ -46,7 +47,7 @@ def update_prices():
     print(price_update)
 
 
-
+test_app()
 
 
 # import aiohttp
